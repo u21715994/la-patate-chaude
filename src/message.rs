@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize)]
 enum Result {
     Ok,
-    Err(SubscribeError),
+    Err(SubscribeError)
 }
 #[derive(Debug, Deserialize, Serialize)]
 pub enum Challenge {
@@ -15,12 +15,8 @@ pub enum Challenge {
 #[derive(Debug, Deserialize, Serialize)]
 pub enum Message {
     Hello,
-    Welcome {
-        version: u8,
-    },
-    Subscribe {
-        name: String,
-    },
+    Welcome { version: u8 },
+    Subscribe { name: String },
     SubscribeResult(Result),
     PublicLeaderBoard(Vec<PublicPlayer>),
     Challenge(Challenge),
@@ -37,13 +33,13 @@ pub enum Message {
     },
     EndOfGame {
         leader_board: Vec<PublicPlayer>,
-    },
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 enum SubscribeError {
     AlreadyRegistered,
-    InvalidName,
+    InvalidName
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq)]
@@ -60,7 +56,7 @@ pub struct PublicPlayer {
 enum ChallengeName {
     MD5HashCash,
     MonstrousMaze,
-    RecoverSecret,
+    RecoverSecret
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -70,13 +66,13 @@ pub struct ChallengeInputHash {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct ChallengeInputMonstrous {
+pub struct ChallengeInputMonstrous{
     pub grid: String,
     pub endurance: u32,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct ChallengeInputRecoverSecret {
+pub struct ChallengeInputRecoverSecret{
     pub word_count: usize,
     pub letters: String,
     pub tuple_sizes: Vec<usize>,
@@ -106,11 +102,17 @@ pub enum ChallengeAnswer {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-enum ChallengeValue {
+enum ChallengeValue{
     Unreachable,
     Timeout,
-    BadResult { used_time: f64, next_target: String },
-    Ok { used_time: f64, next_target: String },
+    BadResult {
+        used_time: f64,
+        next_target: String
+    },
+    Ok {
+        used_time: f64,
+        next_target: String
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
