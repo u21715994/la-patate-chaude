@@ -28,15 +28,15 @@ fn main() {
     let name_player = &args[1];
     let mut stream = TcpStream::connect("127.0.0.1:7878").unwrap();
     let message = r#""Hello""#;
-
+    /// on écrit le préfixe (taille du prochain message)
     let len = message.len() as u32;
-    stream.write(&len.to_be_bytes()).unwrap(); // on écrit le préfixe (taille du prochain message)
-    stream.write(message.as_bytes()).unwrap(); // puis le message en tant que tel
+    stream.write(&len.to_be_bytes()).unwrap();
+    /// puis le message en tant que tel
+    stream.write(message.as_bytes()).unwrap();
     let mut my_score = 0;
     let mut list_player: Vec<PublicPlayer> = Vec::new();
-    //let mut stream = TcpStream::connect("127.0.0.1:7878").unwrap();
 
-    // Envoyer le message Hello au serveur
+    /// Envoyer le message Hello au serveur
 
     loop {
         let mut len_buf = [0u8; 4];
@@ -50,7 +50,7 @@ fn main() {
         let message: Message = serde_json::from_value(json_value).unwrap();
         match message {
             Message::Welcome { version } => {
-                // Envoyer le message Subscribe au serveur
+                /// Envoyer le message Subscribe au serveur
                 let subscribe_message = Message::Subscribe {
                     name: name_player.to_string(),
                 };

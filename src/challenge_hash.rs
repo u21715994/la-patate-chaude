@@ -9,29 +9,29 @@ use std::str::FromStr;
 //use crate::Challenge;
 use crate::challenge::Challenge;
 
-// Ajout des bibliothèques externes nécessaires
+/// Ajout des bibliothèques externes nécessaires
 extern crate md5;
 extern crate rand;
 
-// Structure qui représente les données en entrée du challenge
+/// Structure qui représente les données en entrée du challenge
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct MD5HashCashInput {
-    // complexité en bits
+    /// complexité en bits
     pub complexity: u32,
-    // message à signer
+    /// message à signer
     pub message: String,
 }
 
-// Structure qui représente les données en sortie du challenge
+/// Structure qui représente les données en sortie du challenge
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct MD5HashCashOutput {
-    // graine utilisée pour résoudre le challenge
+    /// graine utilisée pour résoudre le challenge
     pub seed: u64,
-    // hashcode trouvé en utilisant la graine + le message
+    /// hashcode trouvé en utilisant la graine + le message
     pub hashcode: String,
 }
 
-// Implémentation de la fonction Hash pour la structure MD5HashCashInput
+/// Implémentation de la fonction Hash pour la structure MD5HashCashInput
 impl Hash for MD5HashCashInput {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.complexity.hash(state);
@@ -39,7 +39,7 @@ impl Hash for MD5HashCashInput {
     }
 }
 
-// Implémentation de la fonction FromStr pour la structure MD5HashCashInput
+/// Implémentation de la fonction FromStr pour la structure MD5HashCashInput
 impl FromStr for MD5HashCashInput {
     type Err = String;
 
@@ -55,7 +55,7 @@ impl FromStr for MD5HashCashInput {
     }
 }
 
-// converti le caractère hexadécimal en binaire
+/// converti le caractère hexadécimal en binaire
 fn format_binary(c: char) -> String {
     if c == '0' {
         return "0000".to_string();
@@ -93,7 +93,7 @@ fn format_binary(c: char) -> String {
     return "1".to_string();
 }
 
-// converti un hexadécimal en binaire
+/// converti un hexadécimal en binaire
 fn convert_hex_to_binary(hex: &String) -> String {
     let mut binary = "".to_string();
     for i in hex.chars() {
@@ -111,19 +111,19 @@ fn verify_bit_zero(number: u32, binary: String) -> bool {
     return true;
 }
 
-// Fonction principale qui résout le challenge
+/// Fonction principale qui résout le challenge
 fn solve_md5_hash_cash(input: MD5HashCashInput) -> MD5HashCashOutput {
-    // Map qui stocke les résultats déjà calculés pour éviter de refaire les calculs
+    /// Map qui stocke les résultats déjà calculés pour éviter de refaire les calculs
     let mut cache: HashMap<MD5HashCashInput, MD5HashCashOutput> = HashMap::new();
     let mut output: MD5HashCashOutput = MD5HashCashOutput {
         seed: 1,
         hashcode: "".to_string(),
     };
 
-    // Génère une valeur de graine aléatoire
+    /// Génère une valeur de graine aléatoire
     let mut seed: u64 = 0;
 
-    // Tant qu'on n'a pas trouvé une valeur de graine qui résout le challenge
+    /// Tant qu'on n'a pas trouvé une valeur de graine qui résout le challenge
     loop {
         let mut seed_binary = format!("{:X}", seed);
         if seed_binary.len() < 16 {
@@ -132,20 +132,19 @@ fn solve_md5_hash_cash(input: MD5HashCashInput) -> MD5HashCashOutput {
                 seed_binary = "0".to_string() + &seed_binary;
             }
         }
-        // Calcul du hashcode en utilisant la graine + le message
+        /// Calcul du hashcode en utilisant la graine + le message
         let mut binary = md5::Md5::new();
         binary.update(seed_binary.to_owned() + &input.message.to_string());
         let binary_bin = binary.finalize();
         let hashcode = format!("{:X}", binary_bin);
-        // Convertit le hashcode en binaire
+        /// Convertit le hashcode en binaire
         let hashcode_bin = convert_hex_to_binary(&hashcode);
-        //let hashcode_bin = format!("{:b}", hashcode.into_bytes());
 
-        //regarder si les complexity bits sont egaux à 0 convertir hashcode en bits
+        ///regarder si les complexity bits sont egaux à 0 convertir hashcode en bits
         let hashcode_clone = hashcode.clone();
         // Vérifie si le hashcode comprend au moins "complexity" bits égaux à 0
         if verify_bit_zero(input.complexity, hashcode_bin) {
-            //Stocke le résultat dans la map pour éviter de refaire les calculs
+            ///Stocke le résultat dans la map pour éviter de refaire les calculs
             let seed_binary_64 = u64::from_str_radix(&seed_binary, 16).unwrap();
             output.seed = seed_binary_64;
             output.hashcode = hashcode_clone;
@@ -156,43 +155,43 @@ fn solve_md5_hash_cash(input: MD5HashCashInput) -> MD5HashCashOutput {
         seed = seed + 1;
     }
 
-    // Retourne le résultat du challenge
+    /// Retourne le résultat du challenge
     println!("{:?}", output);
     output
 }
 
-// Implémentation du trait Challenge pour la structure MD5HashCash
+/// Implémentation du trait Challenge pour la structure MD5HashCash
 pub struct MD5HashCashChallenge {
-    md5HashCashInput: MD5HashCashInput,
-    md5HashCashOuput: MD5HashCashOutput,
+    md5hash_cash_input: MD5HashCashInput,
+    md5hash_cash_ouput: MD5HashCashOutput,
 }
 
 impl Challenge for MD5HashCashChallenge {
     type Input = MD5HashCashInput;
     type Output = MD5HashCashOutput;
-    // Le nom du challenge est "MD5 Hash Cash"
+    /// Le nom du challenge est "MD5 Hash Cash"
     fn name() -> String {
         "MD5 Hash Cash".to_string()
     }
 
-    // Crée un nouveau challenge à partir des données en entrée
-    fn new(hashInput: Self::Input) -> Self {
-        let hashInput_clone = hashInput.clone();
+    /// Crée un nouveau challenge à partir des données en entrée
+    fn new(hash_input: Self::Input) -> Self {
+        let hash_input_clone = hash_input.clone();
         MD5HashCashChallenge {
-            md5HashCashInput: hashInput,
-            md5HashCashOuput: solve_md5_hash_cash(hashInput_clone),
+            md5hash_cash_input: hash_input,
+            md5hash_cash_ouput: solve_md5_hash_cash(hash_input_clone),
         }
     }
 
-    // Résout le challenge
+    /// Résout le challenge
     fn solve(&self) -> Self::Output {
-        self.md5HashCashOuput.clone()
+        self.md5hash_cash_ouput.clone()
     }
 
-    // Vérifie qu'une sortie est valide pour le challenge
+    /// Vérifie qu'une sortie est valide pour le challenge
     fn verify(&self, output: &Self::Output) -> bool {
         // Vérifie si les données en sortie sont égales à celles calculées lors de la création du challenge
-        self.md5HashCashOuput == *output
+        self.md5hash_cash_ouput == *output
     }
 }
 

@@ -10,7 +10,7 @@ pub struct MonstrousMazeOutput {
 pub fn monstrous_maze(input: MonstrousMazeInput) -> MonstrousMazeOutput {
     let mut list = Vec::new();
     let mut list_first_directions = Vec::new();
-    let mut grid2: String = input.grid.clone(); //TEMP
+    let mut grid2: String = input.grid.clone();
     let mut endurance2 = input.endurance;
     let mut path: String = "".to_string();
     let mut c = 0;
