@@ -1,20 +1,17 @@
 //ajouter ces bibliotheques externes au projet
 use md5::Digest;
+use serde::Deserializer;
+use serde_json::Value;
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::num::ParseIntError;
 use std::str::FromStr;
-use serde::Deserializer;
-use serde_json::Value;
 //use crate::Challenge;
 use crate::challenge::Challenge;
 
-
 // Ajout des bibliothèques externes nécessaires
-extern crate rand;
 extern crate md5;
-
-
+extern crate rand;
 
 // Structure qui représente les données en entrée du challenge
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -116,19 +113,22 @@ fn verify_bit_zero(number: u32, binary: String) -> bool {
 
 // Fonction principale qui résout le challenge
 fn solve_md5_hash_cash(input: MD5HashCashInput) -> MD5HashCashOutput {
-// Map qui stocke les résultats déjà calculés pour éviter de refaire les calculs
+    // Map qui stocke les résultats déjà calculés pour éviter de refaire les calculs
     let mut cache: HashMap<MD5HashCashInput, MD5HashCashOutput> = HashMap::new();
-    let mut output: MD5HashCashOutput = MD5HashCashOutput{seed: 1, hashcode: "".to_string()};
+    let mut output: MD5HashCashOutput = MD5HashCashOutput {
+        seed: 1,
+        hashcode: "".to_string(),
+    };
 
-// Génère une valeur de graine aléatoire
+    // Génère une valeur de graine aléatoire
     let mut seed: u64 = 0;
 
-// Tant qu'on n'a pas trouvé une valeur de graine qui résout le challenge
+    // Tant qu'on n'a pas trouvé une valeur de graine qui résout le challenge
     loop {
         let mut seed_binary = format!("{:X}", seed);
-        if seed_binary.len() < 16{
-            let zero_to_add = 16-seed_binary.len();
-            for i in 0..zero_to_add{
+        if seed_binary.len() < 16 {
+            let zero_to_add = 16 - seed_binary.len();
+            for i in 0..zero_to_add {
                 seed_binary = "0".to_string() + &seed_binary;
             }
         }
@@ -153,10 +153,10 @@ fn solve_md5_hash_cash(input: MD5HashCashInput) -> MD5HashCashOutput {
         }
 
         // Génère une nouvelle valeur de graine aléatoire
-        seed = seed+1;
+        seed = seed + 1;
     }
 
-// Retourne le résultat du challenge
+    // Retourne le résultat du challenge
     println!("{:?}", output);
     output
 }
@@ -203,12 +203,18 @@ fn test_md5_hash_cash_input_from_str_valid_input() {
         complexity: 5,
         message: "hello".to_string(),
     };
-    assert_eq!(input_str.parse::<MD5HashCashInput>().unwrap(), expected_input);
+    assert_eq!(
+        input_str.parse::<MD5HashCashInput>().unwrap(),
+        expected_input
+    );
 }
 
 #[test]
 fn test_md5_hash_cash_input_from_str_missing_message() {
     let input_str = "00000".to_string();
     let expected_err = "Missing message".to_string();
-    assert_eq!(input_str.parse::<MD5HashCashInput>().unwrap_err(), expected_err);
+    assert_eq!(
+        input_str.parse::<MD5HashCashInput>().unwrap_err(),
+        expected_err
+    );
 }
