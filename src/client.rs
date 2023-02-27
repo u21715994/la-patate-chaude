@@ -10,17 +10,14 @@ mod message;
 use message::Message;
 use crate::message::Challenge::MD5HashCash;
 use crate::message::Challenge::MonstrousMaze;
-use crate::message::{ChallengeInputHash, ChallengeInputMonstrous, PublicPlayer};
+use crate::message::{ChallengeInputHash, ChallengeInputMonstrous, ChallengeOutputHash, MonstrousMazeOutput, PublicPlayer};
 mod challenge_hash;
+mod challenge_monstrous_maze;
 mod challenge;
 use challenge::Challenge;
-//use challenge_hash::MD5HashCashInput;
-//use crate::challenge_hash::MD5HashCashChallenge;
-//use HashCashMod::{verify, new, solve, MD5HashCashChallenge, MD5HashCashInput};
-//use crate::challenge_hash::HashCashMod::{MD5HashCashChallenge, MD5HashCashInput};
 use crate::challenge_hash::{MD5HashCashChallenge, MD5HashCashInput};
 use message::ChallengeAnswer;
-use message::ChallengeOutput;
+use crate::challenge_monstrous_maze::{monstrous_maze, MonstrousMazeInput};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -86,26 +83,39 @@ fn main() {
                 break;
             }
             Message::Challenge(MonstrousMaze(ChallengeInputMonstrous{grid, endurance}))=>{
-                println!("monstrous");
+                let input: MonstrousMazeInput = MonstrousMazeInput{
+                    grid,
+                    endurance
+                };
+                let output = monstrous_maze(input);
+                let best_player = attack_best_player(name_player.to_string(), my_score, &list_player);
+                let result_message = Message::ChallengeResult {
+                    answer: ChallengeAnswer::MonstrousMaze(MonstrousMazeOutput{
+                        path: output.path
+                    }),
+                    next_target: best_player
+                };
+                let result_json = serde_json::to_string(&result_message).unwrap();
+                let result_len = result_json.len() as u32;
+                let result_len_buf = result_len.to_be_bytes();
+                stream.write_all(&result_len_buf).unwrap();
+                stream.write_all(result_json.as_bytes()).unwrap();
             },
             Message::Challenge(MD5HashCash(ChallengeInputHash{ complexity , message }))=>{
                 let input: MD5HashCashInput = MD5HashCashInput{
                     complexity: u32::from(complexity),
                     message
                 };
-                //println!("entree {:?}", input);
                 let challenge = MD5HashCashChallenge::new(input);
                 let output = challenge.solve();
-                //println!("{:?}", output);
                 let best_player = attack_best_player(name_player.to_string(), my_score, &list_player);
                 let result_message = Message::ChallengeResult {
-                    answer: ChallengeAnswer::MD5HashCash(ChallengeOutput{
+                    answer: ChallengeAnswer::MD5HashCash(ChallengeOutputHash{
                         seed: output.seed,
                         hashcode: output.hashcode,
                     }),
                     next_target: best_player
                 };
-                //println!("{:?}", result_message);
                 let result_json = serde_json::to_string(&result_message).unwrap();
                 let result_len = result_json.len() as u32;
                 let result_len_buf = result_len.to_be_bytes();
@@ -135,7 +145,6 @@ fn is_present(name: &String, players: &Vec<PublicPlayer>) -> bool{
 }
 
 fn attack_best_player(name: String, mut score: i32, list_player: &Vec<PublicPlayer>)-> String{
-    println!("{:?}", score);
     let mut best_player_name = String::from("");
     for player in list_player{
         if score < player.score && name != player.name{

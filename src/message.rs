@@ -69,14 +69,20 @@ pub struct ChallengeInputMonstrous{
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct ChallengeOutput {
+pub struct ChallengeOutputHash {
     pub seed: u64,
     pub hashcode: String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+pub struct MonstrousMazeOutput {
+    pub path: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub enum ChallengeAnswer {
-    MD5HashCash(ChallengeOutput)
+    MD5HashCash(ChallengeOutputHash),
+    MonstrousMaze(MonstrousMazeOutput)
 }
 
 #[derive(Debug, Deserialize, Serialize)]
