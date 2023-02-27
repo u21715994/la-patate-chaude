@@ -4,20 +4,21 @@ use std::io::prelude::*;
 use std::net::TcpStream;
 use md5::Digest;
 use serde_json::Value;
-//use serde_json::Value::String;
 use std::string::String;
 mod message;
 use message::Message;
-use crate::message::Challenge::MD5HashCash;
+use crate::message::Challenge::{MD5HashCash, RecoverSecret};
 use crate::message::Challenge::MonstrousMaze;
-use crate::message::{ChallengeInputHash, ChallengeInputMonstrous, ChallengeOutputHash, MonstrousMazeOutput, PublicPlayer};
+use crate::message::{ChallengeInputHash, ChallengeInputMonstrous, ChallengeInputRecoverSecret, ChallengeOutputHash, MonstrousMazeOutput, PublicPlayer, RecoverSecretOutput};
 mod challenge_hash;
 mod challenge_monstrous_maze;
+mod challenge_recover_secret;
 mod challenge;
 use challenge::Challenge;
 use crate::challenge_hash::{MD5HashCashChallenge, MD5HashCashInput};
 use message::ChallengeAnswer;
 use crate::challenge_monstrous_maze::{monstrous_maze, MonstrousMazeInput};
+use crate::challenge_recover_secret::{recover_secret, RecoverSecretInput};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -81,6 +82,26 @@ fn main() {
             Message::ChallengeTimeout { message }=>{
                 println!("Vous avez ete vire");
                 break;
+            },
+            Message::Challenge(RecoverSecret(ChallengeInputRecoverSecret{word_count, letters, tuple_sizes}))=>{
+                let input = RecoverSecretInput {
+                    word_count,
+                    letters,
+                    tuple_sizes,
+                };
+                let output = recover_secret(input);
+                let best_player = attack_best_player(name_player.to_string(), my_score, &list_player);
+                let result_message = Message::ChallengeResult {
+                    answer: ChallengeAnswer::RecoverSecret(RecoverSecretOutput{
+                        secret_sentence: output.secret_sentence,
+                    }),
+                    next_target: best_player
+                };
+                let result_json = serde_json::to_string(&result_message).unwrap();
+                let result_len = result_json.len() as u32;
+                let result_len_buf = result_len.to_be_bytes();
+                stream.write_all(&result_len_buf).unwrap();
+                stream.write_all(result_json.as_bytes()).unwrap();
             }
             Message::Challenge(MonstrousMaze(ChallengeInputMonstrous{grid, endurance}))=>{
                 let input: MonstrousMazeInput = MonstrousMazeInput{

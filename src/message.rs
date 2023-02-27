@@ -8,7 +8,8 @@ enum Result {
 #[derive(Debug, Deserialize, Serialize)]
 pub enum Challenge {
     MD5HashCash(ChallengeInputHash),
-    MonstrousMaze(ChallengeInputMonstrous)
+    MonstrousMaze(ChallengeInputMonstrous),
+    RecoverSecret(ChallengeInputRecoverSecret),
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -54,6 +55,8 @@ pub struct PublicPlayer {
 #[derive(Debug, Deserialize, Serialize)]
 enum ChallengeName {
     MD5HashCash,
+    MonstrousMaze,
+    RecoverSecret
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -69,6 +72,13 @@ pub struct ChallengeInputMonstrous{
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+pub struct ChallengeInputRecoverSecret{
+    pub word_count: usize,
+    pub letters: String,
+    pub tuple_sizes: Vec<usize>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ChallengeOutputHash {
     pub seed: u64,
     pub hashcode: String,
@@ -80,9 +90,15 @@ pub struct MonstrousMazeOutput {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+pub struct RecoverSecretOutput {
+    pub secret_sentence: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub enum ChallengeAnswer {
     MD5HashCash(ChallengeOutputHash),
-    MonstrousMaze(MonstrousMazeOutput)
+    MonstrousMaze(MonstrousMazeOutput),
+    RecoverSecret(RecoverSecretOutput),
 }
 
 #[derive(Debug, Deserialize, Serialize)]
