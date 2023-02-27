@@ -132,19 +132,11 @@ fn solve_md5_hash_cash(input: MD5HashCashInput) -> MD5HashCashOutput {
                 seed_binary = "0".to_string() + &seed_binary;
             }
         }
-        /*for i in seed.to_le_bytes(){
-        seed_binary = seed_binary + &*i.to_string();
-    }*/
         // Calcul du hashcode en utilisant la graine + le message
         let mut binary = md5::Md5::new();
         binary.update(seed_binary.to_owned() + &input.message.to_string());
         let binary_bin = binary.finalize();
-        //let bin = format!("{:X}", binary_bin);
-        //println!("{bin}");
         let hashcode = format!("{:X}", binary_bin);
-        //println!("{hashcode}");
-        //let hashcode = format!("{:X}", md5::compute(format!("{:X}{}", seed, input.message)));
-
         // Convertit le hashcode en binaire
         let hashcode_bin = convert_hex_to_binary(&hashcode);
         //let hashcode_bin = format!("{:b}", hashcode.into_bytes());
@@ -154,12 +146,9 @@ fn solve_md5_hash_cash(input: MD5HashCashInput) -> MD5HashCashOutput {
         // Vérifie si le hashcode comprend au moins "complexity" bits égaux à 0
         if verify_bit_zero(input.complexity, hashcode_bin) {
             //Stocke le résultat dans la map pour éviter de refaire les calculs
-            //println!("{}", seed_binary);
             let seed_binary_64 = u64::from_str_radix(&seed_binary, 16).unwrap();
             output.seed = seed_binary_64;
             output.hashcode = hashcode_clone;
-            //println!("{}", seed_binary_64);
-            //cache.insert(input.clone(), MD5HashCashOutput { seed: seed_binary_64, hashcode: hashcode_clone });
             break;
         }
 
@@ -223,10 +212,3 @@ fn test_md5_hash_cash_input_from_str_missing_message() {
     let expected_err = "Missing message".to_string();
     assert_eq!(input_str.parse::<MD5HashCashInput>().unwrap_err(), expected_err);
 }
-
-    /*
- * INFO COMPLÉMENTAIRE
-Vous pouvez ensuite appeler la méthode solve_md5_hash_cash en lui passant les données en entrée du challenge, et elle retournera les données en sortie du challenge. Par exemple :
-
-let input: MD5HashCashInput = "9 hello".parse().unwrap();
-let output = solve_md5_hash_cash(input);*/
