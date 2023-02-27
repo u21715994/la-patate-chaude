@@ -3,7 +3,7 @@ package com.example.projetcleancodegroupe5.functional.model;
 import java.util.Objects;
 
 public class HeroWizard implements Hero {
-    String id = "";
+    float id = 1;
     String name;
     int lifePoint;
     int experiencePoint;
@@ -21,8 +21,9 @@ public class HeroWizard implements Hero {
         this.level = 1;
     }
 
-    public HeroWizard(String name, int lifePoint, int experiencePoint, int power, int armor,
+    public HeroWizard(float id, String name, int lifePoint, int experiencePoint, int power, int armor,
                         Rarity rarity, int level){
+        this.id = id;
         this.name = name;
         this.lifePoint = lifePoint;
         this.experiencePoint = experiencePoint;
@@ -33,7 +34,7 @@ public class HeroWizard implements Hero {
     }
 
     @Override
-    public void setId(String id) {
+    public void setId(float id) {
         this.id = id;
     }
 
@@ -64,14 +65,14 @@ public class HeroWizard implements Hero {
 
     @Override
     public Hero setLifePoint(int lifePoint) {
-        return new HeroWizard(this.name, this.lifePoint + lifePoint, this.experiencePoint,
+        return new HeroWizard(this.id, this.name, this.lifePoint + lifePoint, this.experiencePoint,
                 this.power, this.armor, this.rarity, this.level
         );
     }
 
     @Override
     public Hero levelUp(){
-        return new HeroWizard(this.name, this.lifePoint + this.lifePoint / 10, this.experiencePoint,
+        return new HeroWizard(this.id, this.name, this.lifePoint + this.lifePoint / 10, this.experiencePoint,
                 this.power + this.power / 10, this.armor + this.armor / 10, this.rarity, this.level+1
         );
     }
@@ -92,14 +93,14 @@ public class HeroWizard implements Hero {
 
     @Override
     public Hero battleWin(){
-        return new HeroWizard(this.name, this.lifePoint + this.lifePoint, this.experiencePoint+1,
+        return new HeroWizard(this.id, this.name, this.lifePoint + this.lifePoint, this.experiencePoint+1,
                 this.power, this.armor, this.rarity, this.level
         );
     }
 
     @Override
     public Hero defend(Hero hero) {
-        return new HeroWizard(this.name, this.lifePoint - (hero.getPower() + hero.getPower() - this.getArmor()),
+        return new HeroWizard(this.id, this.name, this.lifePoint - (hero.getPower() + hero.getPower() - this.getArmor()),
                 this.experiencePoint, this.power, this.armor, this.rarity, this.level
         );
     }
@@ -125,7 +126,7 @@ public class HeroWizard implements Hero {
     }
 
     @Override
-    public String getID() {
+    public float getID() {
         return id;
     }
 

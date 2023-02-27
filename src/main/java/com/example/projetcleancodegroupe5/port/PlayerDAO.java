@@ -6,4 +6,5 @@ public interface PlayerDAO {
     void addPlayer(Player player);
 
     void updatePlayer(String id, Player player);
+    Player findPlayer(String id);
 }

@@ -10,7 +10,18 @@ public class Player {
     long token;
     long numberBattleWin;
 
+    public Player(){
+
+    }
+
     public Player(String name){
+        this.name = name;
+        this.token = 4;
+        this.numberBattleWin = 0;
+        this.deck = new Deck();
+    }
+
+    public Player(String name, String string, long token, long numberBattleWin){
         this.name = name;
         this.ID = "1";
         this.token = 4;

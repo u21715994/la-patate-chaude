@@ -1,7 +1,10 @@
 package com.example.projetcleancodegroupe5.functional.model;
 
 public enum Speciality {
-    TANK,
-    ASSASSIN,
-    WIZARD
+    TANK("TANK"),
+    ASSASSIN("ASSASSIN"),
+    WIZARD("ASSASSIN");
+
+    Speciality(String value) {
+    }
 }

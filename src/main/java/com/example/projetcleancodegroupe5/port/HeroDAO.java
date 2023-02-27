@@ -6,4 +6,5 @@ public interface HeroDAO {
     void addHero(Hero hero);
 
     void updateHero(String id, Hero hero);
+    Hero getHero(String id);
 }

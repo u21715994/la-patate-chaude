@@ -22,7 +22,7 @@ public class HeroController {
             path = "/hero",
             produces = "application/json"
     )
-    public void addHero(Hero hero){
+    public void addHero(@RequestBody Hero hero){
         heroDAO.addHero(hero);
     }
 

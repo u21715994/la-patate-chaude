@@ -9,7 +9,7 @@ import java.util.List;
 
 public class SelectHeroFirstInDeckService implements SelectHeroType{
     @Override
-    public List<Hero> selectHero(Player attacker, Player defender) {
+    public static List<Hero> selectHero(Player attacker, Player defender) {
         Deck deckAttacker = ShowDeckPlayerService.showDeck(attacker);
         Hero hero_attacker = deckAttacker.getCards().get(0);
         List<Hero> heroOfPlayer = HeroFinderService.findHero(defender.getDeck(), hero_attacker.getLevel());
